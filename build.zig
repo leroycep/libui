@@ -19,12 +19,19 @@ pub fn build(b: *Builder) void {
     exe.addIncludeDir("./");
     exe.linkSystemLibrary("gtk+-3.0");
 
-    exe.addCSourceFiles(common_c_files, &[_][]const u8{});
+    for (common_c_files) |c_file| {
+        exe.addCSourceFile(c_file, &[_][]const u8{});
+    }
     if (target.isWindows()) {
         exe.linkSystemLibrary("c++");
-        exe.addCSourceFiles(windows_c_files, &[_][]const u8{});
+        for (windows_c_files) |c_file| {
+            exe.addCSourceFile(c_file, &[_][]const u8{});
+        }
     } else if (target.isLinux()) {
-        exe.addCSourceFiles(unix_c_files, &[_][]const u8{});
+        exe.addLibPath("/usr/lib/x86_64-linux-gnu/");
+        for (unix_c_files) |c_file| {
+            exe.addCSourceFile(c_file, &[_][]const u8{});
+        }
     }
 
     exe.install();
